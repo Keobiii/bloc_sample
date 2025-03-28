@@ -178,9 +178,9 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
         value = ""; 
       }
 
-      if (equation.isEmpty && value == Btn.dot) {
-        value = ""; 
-      }
+      // if (equation.isEmpty && value == Btn.dot) {
+      //   value = ""; 
+      // }
 
       if (equation.isNotEmpty) {
         String lastVal = equation[equation.length - 1];

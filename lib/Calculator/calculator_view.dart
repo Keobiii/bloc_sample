@@ -1,5 +1,6 @@
 // calculator_view.dart
 import 'package:bloc_sample/Calculator/button_values.dart';
+import 'package:bloc_sample/Enum/calculator_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'calculator_functions.dart';
@@ -125,6 +126,10 @@ Widget build(BuildContext context) {
   // get screen size
   final screenSize = MediaQuery.of(context).size;
 
+  for(var buttons in Buttons.values) {
+    print("Button Name: ${buttons.name}, Value: ${buttons.value}");
+  }
+
   return Scaffold(
     backgroundColor: Colors.black,
     appBar: AppBar(
@@ -169,15 +174,23 @@ Widget build(BuildContext context) {
         Container(
             child: Wrap(
               runSpacing: 4.0,
-              children: Btn.buttonValues
-                  .map(
-                    (value) => SizedBox(
-                      width: screenSize.width / 4,
-                      height: 100,
-                      child: buildButton(value),
-                    ),
-                  )
-                  .toList(),
+              // children: Btn.buttonValues
+              //     .map(
+              //       (value) => SizedBox(
+              //         width: screenSize.width / 4,
+              //         height: 100,
+              //         child: buildButton(value),
+              //       ),
+              //     )
+              //     .toList(),
+              children: [
+                for (var buttons in Buttons.values)
+                SizedBox(
+                  width: screenSize.width / 4,
+                  height: 100,
+                  child: buildButton(buttons.name, buttons.value),
+                )
+              ],
             ),
           ),
       ],
@@ -185,97 +198,97 @@ Widget build(BuildContext context) {
   );
 }
 
-  Widget buildButton(value) {
+  Widget buildButton(button_name, button_values) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Material(
-        color: getBtnColor(value),
+        color: getBtnColor(button_name),
         clipBehavior: Clip.antiAlias,
         shape: const CircleBorder(),
         child: InkWell(
-          onTap: () => onBtnTap(value),
+          onTap: () => onBtnTap(button_name, button_values),
           child: Center(
-            child: modifiedBtnValue(value),
+            child: modifiedBtnValue(button_values),
           ),
         ),
       ),
     );
   }
 
-  Color getBtnColor(value) {
-    return [Btn.xop, Btn.clr, Btn.per].contains(value)
+  Color getBtnColor(button_name) {
+    return ["xop", "clr", "per"].contains(button_name)
         ? const Color.fromARGB(255, 107, 107, 107)
         : [
-          Btn.multiply,
-          Btn.add,
-          Btn.subtract,
-          Btn.divide,
-          Btn.calculate,
-        ].contains(value)
+          "multiply",
+          "add",
+          "subtract",
+          "divide",
+          "calculate",
+        ].contains(button_name)
         ? const Color.fromARGB(255, 253, 154, 5)
         : Color.fromARGB(255, 60, 60, 60);
   }
 
-  modifiedBtnValue(value) {
-    if (value == "@") {
+  modifiedBtnValue(button_values) {
+    if (button_values == "@") {
       return Padding(
         padding: const EdgeInsets.all(15.0),
         child: Image.asset('assets/calculator.png'),
       );
-    } else if(value == "*") {
+    } else if(button_values == "*") {
       return Text(
         'x',
-        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 35),
+        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 35, color: Colors.white),
       );
-    } else if(value == "/") {
+    } else if(button_values == "/") {
       return Text(
         '÷',
-        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 35),
+        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 35, color: Colors.white),
       );
     } else {
       return Text(
-        value,
-        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 35),
+        button_values,
+        style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 35, color: Colors.white),
       );
     }
   }
 
-    void onBtnTap(String value) {
+    void onBtnTap(String button_name, String button_values) {
     // if (value == Btn.del) {
     //   delete();
     //   return;
     // }
 
-    if (value == Btn.xop) {
+    if (button_name == "xop") {
       context.read<CalculatorBloc>().add(OppositeSign(equation));
       return;
     }
 
-    if (value == Btn.clr) {
+    if (button_name == "clr") {
       context.read<CalculatorBloc>().add(ClearAll(equation));
       return;
     }
 
-    if (value == Btn.per) {
+    if (button_name == "per") {
       // convertToPercentage();
       context.read<CalculatorBloc>().add(ConvertToPercentage(equation));
       return;
     }
 
-    if (value == Btn.calculate) {
+    if (button_name == "calculate") {
       print("Equation: " + equation);
       context.read<CalculatorBloc>().add(CalculateEquation(equation));
       return;
     }
 
-    if (value == Btn.at) {
+    if (button_name == "at") {
       isSnackVisible = true;
       _showSnackbar("Rawr! SnackBar Triggered", Colors.white);
       return;
     }
 
     
-    context.read<CalculatorBloc>().add(StoreValues(value));
+    context.read<CalculatorBloc>().add(StoreValues(button_values));
   }
 
 
